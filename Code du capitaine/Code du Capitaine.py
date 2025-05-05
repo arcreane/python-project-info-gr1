@@ -14,15 +14,29 @@ def melanger_mots(mot):
 
 
 def verifier_reponse():
-    global essais, mot_correct
+    global essais, mot_correct, victoires_consecutives
 
     reponse = entry.get().strip().lower()
 
     if reponse == mot_correct:
 
-        messagebox.showinfo("Victoire du Capitaine !", "Par les sept mers ! Tu as trouvé l’code ! Le coffre s’ouvre !")
+        victoires_consecutives += 1
 
-        root.destroy()
+        if victoires_consecutives == 3:
+
+            messagebox.showinfo("Victoire du Capitaine !",
+
+                                "Par les sept mers ! Trois codes déchiffrés ! Le coffre s’ouvre enfin !")
+
+            root.destroy()
+
+        else:
+
+            messagebox.showinfo("Bravo moussaillon !",
+
+                                f"Correct ! Encore {3 - victoires_consecutives} code(s) à percer.")
+
+            lancer_nouveau_mot()
 
     else:
 
@@ -39,19 +53,34 @@ def verifier_reponse():
         else:
 
             messagebox.showerror("Échec du Pirate",
+
                                  f"Le sort est lancé... Le bon mot était '{mot_correct}'. Le trésor reste caché.")
 
             root.destroy()
 
 
-def jouer():
-    global essais, mot_correct, entry, label_info, root
-
-    mots_pirates = ["carte", "trésor", "pirate", "boussole", "capitaine", "sabre"]
+def lancer_nouveau_mot():
+    global mot_correct, essais
 
     mot_correct = random.choice(mots_pirates)
 
     mot_melange = melanger_mots(mot_correct)
+
+    label_instruction.config(text=f"Gravure ancienne : {mot_melange}")
+
+    entry.delete(0, tk.END)
+
+    essais = 3
+
+    label_info.config(text="")
+
+
+def jouer():
+    global essais, mot_correct, entry, label_info, root, mots_pirates, label_instruction, victoires_consecutives
+
+    mots_pirates = ["carte", "trésor", "pirate", "boussole", "capitaine", "sabre"]
+
+    victoires_consecutives = 0
 
     essais = 3
 
@@ -71,9 +100,7 @@ def jouer():
 
     label_titre.pack(pady=10)
 
-    label_instruction = tk.Label(root, text=f"Gravure ancienne : {mot_melange}",
-
-                                 font=("Courier", 16), bg="#f2e6c9", fg="#1e1e1e")
+    label_instruction = tk.Label(root, font=("Courier", 16), bg="#f2e6c9", fg="#1e1e1e")
 
     label_instruction.pack(pady=10)
 
@@ -90,6 +117,8 @@ def jouer():
     label_info = tk.Label(root, text="", font=("Arial", 12), fg="crimson", bg="#f2e6c9")
 
     label_info.pack(pady=10)
+
+    lancer_nouveau_mot()
 
     root.mainloop()
 
